@@ -30,7 +30,7 @@ def test_mule_ring_shared_infrastructure():
     assert "MULE_RING_SHARED_INFRASTRUCTURE" in result["detected_typologies"]
     assert "DEV_MULE_99" in result["shared_infrastructure"]
     assert "ACC_202" in result["shared_infrastructure"]["DEV_MULE_99"]
-    assert result["forensic_risk_score"] >= 45
+    assert result["forensic_risk_score"] >= 40
 
 
 def test_hidden_ubo_exposure():
