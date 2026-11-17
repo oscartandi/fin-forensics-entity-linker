@@ -21,25 +21,46 @@ flowchart LR
     D & E & F --> G[Explainable Risk Scorer<br/>0-100 Severity & Typology Tags]
     G --> H[FastAPI Investigation Service<br/>/investigate & /typologies/cycles]
 ```
-Financial Crime Typologies DetectedTypologyGraph PatternForensic Detection LogicCircular Flow (Round-Tripping)Directed Cycles ($A \rightarrow B \rightarrow C \rightarrow D \rightarrow A$)Identifies funds returning to the originating entity within 3–6 hops with bounded value decay (<25%).Mule Ring / Device FarmBipartite / Star ClusteringLinks seemingly unrelated retail accounts sharing identical LOGGED_IN_FROM device hashes or CONNECTED_VIA IP exit nodes.Hidden UBO ExposureMulti-Hop Ownership Path
 
-Quickstart & Local Execution
-1. Clone & Install
-   git clone [https://github.com/oscartandi/fin-forensics-entity-linker.git](https://github.com/oscartandi/fin-forensics-entity-linker.git)
+---
+
+## Financial Crime Typologies Detected
+
+| Typology | Graph Pattern | Forensic Detection Logic |
+| :--- | :--- | :--- |
+| **Circular Flow (Round-Tripping)** | Directed Cycles ($A \rightarrow B \rightarrow C \rightarrow D \rightarrow A$) | Identifies funds returning to the originating entity within 3–6 hops with bounded value decay (<25%). |
+| **Mule Ring / Device Farm** | Bipartite / Star Clustering | Links seemingly unrelated retail accounts sharing identical `LOGGED_IN_FROM` device hashes or `CONNECTED_VIA` IP exit nodes. |
+| **Hidden UBO Exposure** | Multi-Hop Ownership Path | Traverses `HELD_BY` and `OWNED_BY` edges across layered shell companies to flag proximity to sanctioned or PEP beneficial owners. |
+
+---
+
+## Quickstart & Local Execution
+
+### 1. Clone & Install
+```bash
+git clone [https://github.com/oscartandi/fin-forensics-entity-linker.git](https://github.com/oscartandi/fin-forensics-entity-linker.git)
 cd fin-forensics-entity-linker
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-2. Run Automated Tests
-   pytest -v
+### 2. Run Automated Tests
+```bash
+pytest -v
+```
 
-3. Launch Forensic Investigation API
+### 3. Launch Forensic Investigation API
+```bash
 uvicorn src.api:app --reload
+```
 
-Example Investigation Request
+#### Example Investigation Request
+```bash
 curl [http://127.0.0.1:8000/investigate/ACC_301?hops=3](http://127.0.0.1:8000/investigate/ACC_301?hops=3)
+```
 
+```json
 {
   "entity_id": "ACC_301",
   "forensic_risk_score": 50,
@@ -56,3 +77,4 @@ curl [http://127.0.0.1:8000/investigate/ACC_301?hops=3](http://127.0.0.1:8000/in
     }
   ]
 }
+```
