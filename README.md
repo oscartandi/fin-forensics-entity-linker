@@ -1,2 +1,58 @@
-# fin-forensics-entity-linker
-Multi-Hop Financial Forensics &amp; Entity Link Toolkit. A Graph-based financial crime forensics and multi-hop entity resolution toolkit using NetworkX, FastAPI, and Louvain community detection to uncover mule rings and shell networks.
+# Multi-Hop Financial Forensics & Entity Link Toolkit
+
+![Forensics Engine CI](https://github.com/oscartandi/fin-forensics-entity-linker/actions/workflows/ci.yml/badge.svg)
+![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688.svg)
+![NetworkX](https://img.shields.io/badge/NetworkX-3.3-orange.svg)
+
+A graph intelligence and financial crime forensics toolkit built with **NetworkX** and **FastAPI** to uncover hidden money laundering rings, mule device farms, and layered Ultimate Beneficial Ownership (UBO) exposure across multi-hop entity networks.
+
+---
+
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    A[Synthetic Network Generator<br/>Accounts, Companies, Devices, IPs, UBOs] --> B[Forensic Graph Builder<br/>NetworkX MultiDiGraph]
+    B --> C{Multi-Hop Forensics Engine}
+    C --> D[Circular Flow Detector<br/>3-6 Hop Round-Tripping]
+    C --> E[Infrastructure Linker<br/>Shared Device & IP Clustering]
+    C --> F[UBO Exposure Tracer<br/>Shell Company Ownership Chains]
+    D & E & F --> G[Explainable Risk Scorer<br/>0-100 Severity & Typology Tags]
+    G --> H[FastAPI Investigation Service<br/>/investigate & /typologies/cycles]
+```
+Financial Crime Typologies DetectedTypologyGraph PatternForensic Detection LogicCircular Flow (Round-Tripping)Directed Cycles ($A \rightarrow B \rightarrow C \rightarrow D \rightarrow A$)Identifies funds returning to the originating entity within 3–6 hops with bounded value decay (<25%).Mule Ring / Device FarmBipartite / Star ClusteringLinks seemingly unrelated retail accounts sharing identical LOGGED_IN_FROM device hashes or CONNECTED_VIA IP exit nodes.Hidden UBO ExposureMulti-Hop Ownership Path
+
+Quickstart & Local Execution
+1. Clone & Install
+   git clone [https://github.com/oscartandi/fin-forensics-entity-linker.git](https://github.com/oscartandi/fin-forensics-entity-linker.git)
+cd fin-forensics-entity-linker
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+2. Run Automated Tests
+   pytest -v
+
+3. Launch Forensic Investigation API
+uvicorn src.api:app --reload
+
+Example Investigation Request
+curl [http://127.0.0.1:8000/investigate/ACC_301?hops=3](http://127.0.0.1:8000/investigate/ACC_301?hops=3)
+
+{
+  "entity_id": "ACC_301",
+  "forensic_risk_score": 50,
+  "risk_severity": "HIGH",
+  "detected_typologies": [
+    "HIDDEN_SANCTIONED_UBO_EXPOSURE"
+  ],
+  "ubo_exposures": [
+    {
+      "high_risk_entity": "PER_PEP_01",
+      "label": "Sanctioned_Beneficial_Owner",
+      "hops_away": 3,
+      "ownership_chain": ["ACC_301", "COMP_SHELL_B", "COMP_SHELL_A", "PER_PEP_01"]
+    }
+  ]
+}
