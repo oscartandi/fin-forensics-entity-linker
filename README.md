@@ -23,8 +23,23 @@ flowchart LR
     F --> G
     G --> H[FastAPI Service & HTML5 Canvas<br/>/investigate, /sar, /typologies & /visualize]
 ```
-
 ---
+
+## 🖥️ Visual Showcase & Interactive Explorer
+
+The toolkit features a zero-dependency, interactive HTML5 Canvas force-directed graph visualizer (`/visualize/{entity_id}`) that renders multi-hop ego networks directly in the browser—allowing investigators to inspect risk weights, trace ownership chains, and isolate suspicious mule clusters at a glance.
+
+```text
+  [ACC_301] (High Risk Account - Score: 50)
+     │
+     ├── (3 Hops) ──> [COMP_SHELL_B] ──> [COMP_SHELL_A] ──> [PER_PEP_01] (Sanctioned UBO)
+     │
+     └── (Shared IP) ─> [DEV_9912] <─ (Mule Device Farm Cluster) ─> [ACC_305]
+```
+---
+Interactive Investigation View: Spin up the local API, navigate to http://127.0.0.1:8000/visualize/ACC_301, and explore nodes dynamically.
+
+Regulator-Ready SAR Reports: Instantly compile FinCEN-ready Suspicious Activity Report narratives via GET /investigate/ACC_301/sar.
 
 ## Financial Crime Typologies Detected
 
