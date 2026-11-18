@@ -37,7 +37,7 @@ class FinancialForensicsEngine:
                 continue
             
             hop_amounts = []
-             for i in range(hop_count):
+            for i in range(hop_count):
                 u = cycle[i]
                 v = cycle[(i + 1) % hop_count]
                 hop_amounts.append(tx_graph[u][v]["amount"])
