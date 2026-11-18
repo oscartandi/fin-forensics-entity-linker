@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Query
 from src.data_generator import generate_synthetic_network
 from src.graph_builder import ForensicGraphBuilder
 from src.forensics_engine import FinancialForensicsEngine
+from fastapi.responses import RedirectResponse
 
 app = FastAPI(
     title="Multi-Hop Financial Forensics & Entity Link API",
