@@ -4,6 +4,8 @@ from src.data_generator import generate_synthetic_network
 from src.graph_builder import ForensicGraphBuilder
 from src.forensics_engine import FinancialForensicsEngine
 from src.sar_generator import generate_sar_narrative
+from fastapi.responses import HTMLResponse, RedirectResponse
+from src.visualizer import build_ego_subgraph_payload, render_ego_network_html
 
 app = FastAPI(
     title="Multi-Hop Financial Forensics & Entity Link API",
@@ -69,3 +71,15 @@ def get_mule_communities(min_size: int = 3):
         "total_communities_detected": len(communities),
         "communities": communities,
     }
+
+@app.get("/visualize/{entity_id}", response_class=HTMLResponse)
+def visualize_entity_network(
+    entity_id: str,
+    hops: int = Query(default=3, ge=1, le=5, description="Multi-hop ego-network radius"),
+):
+    """Render an interactive Vis.js forensic network graph for the target entity."""
+    try:
+        payload = build_ego_subgraph_payload(_graph, entity_id=entity_id, hops=hops)
+        return HTMLResponse(content=render_ego_network_html(payload))
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
