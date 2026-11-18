@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from src.data_generator import generate_synthetic_network
 from src.graph_builder import ForensicGraphBuilder
 from src.forensics_engine import FinancialForensicsEngine
-from fastapi.responses import RedirectResponse
+from src.sar_generator import generate_sar_narrative
 
 app = FastAPI(
     title="Multi-Hop Financial Forensics & Entity Link API",
@@ -15,6 +16,11 @@ _payload = generate_synthetic_network(seed=42)
 _builder = ForensicGraphBuilder()
 _graph = _builder.build_from_payload(_payload)
 _engine = FinancialForensicsEngine(_graph)
+
+
+@app.get("/", include_in_schema=False)
+def root_redirect():
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")
@@ -33,6 +39,19 @@ def investigate_entity(
         raise HTTPException(status_code=404, detail=str(exc))
 
 
+@app.get("/investigate/{entity_id}/sar")
+def get_entity_sar_report(
+    entity_id: str,
+    hops: int = Query(default=4, ge=1, le=6, description="Multi-hop traversal radius"),
+):
+    """Run multi-hop forensic investigation and compile an automated SAR narrative."""
+    try:
+        investigation = _engine.investigate_entity(entity_id=entity_id, hops=hops)
+        return generate_sar_narrative(investigation)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
 @app.get("/typologies/cycles")
 def get_circular_laundering_rings(
     min_hops: int = Query(default=3, ge=3, le=6),
@@ -40,10 +59,6 @@ def get_circular_laundering_rings(
 ):
     cycles = _engine.detect_circular_laundering(min_hops=min_hops, max_hops=max_hops)
     return {"total_cycles_detected": len(cycles), "cycles": cycles}
-
-@app.get("/", include_in_schema=False)
-def root_redirect():
-    return RedirectResponse(url="/docs")
 
 
 @app.get("/typologies/communities")
