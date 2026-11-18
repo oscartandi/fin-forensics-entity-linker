@@ -24,7 +24,7 @@ def health_check():
 @app.get("/investigate/{entity_id}")
 def investigate_entity(
     entity_id: str,
-    hops: int = Query(default=3, ge=1, le=6, description="Multi-hop traversal radius"),
+    hops: int = Query(default=4, ge=1, le=6, description="Multi-hop traversal radius"),
 ):
     try:
         return _engine.investigate_entity(entity_id=entity_id, hops=hops)
