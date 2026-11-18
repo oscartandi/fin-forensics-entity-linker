@@ -40,3 +40,17 @@ def get_circular_laundering_rings(
 ):
     cycles = _engine.detect_circular_laundering(min_hops=min_hops, max_hops=max_hops)
     return {"total_cycles_detected": len(cycles), "cycles": cycles}
+
+@app.get("/", include_in_schema=False)
+def root_redirect():
+    return RedirectResponse(url="/docs")
+
+
+@app.get("/typologies/communities")
+def get_mule_communities(min_size: int = 3):
+    """Detect clustered mule rings and shared-device communities via Louvain algorithm."""
+    communities = engine.detect_mule_communities(min_size=min_size)
+    return {
+        "total_communities_detected": len(communities),
+        "communities": communities,
+    }
