@@ -49,7 +49,7 @@ def root_redirect():
 @app.get("/typologies/communities")
 def get_mule_communities(min_size: int = 3):
     """Detect clustered mule rings and shared-device communities via Louvain algorithm."""
-    communities = engine.detect_mule_communities(min_size=min_size)
+    communities = _engine.detect_mule_communities(min_size=min_size)
     return {
         "total_communities_detected": len(communities),
         "communities": communities,

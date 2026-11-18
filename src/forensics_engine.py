@@ -185,14 +185,15 @@ class FinancialForensicsEngine:
             if len(community) < min_size:
                 continue
 
-            accounts = [
-                n for n in community
-                if self.graph.nodes[n].get("entity_type") == "Account"
-            ]
-            shared_infra = [
-                n for n in community
-                if self.graph.nodes[n].get("entity_type") in ("Device", "IP")
-            ]
+            accounts = []
+            shared_infra = []
+            for n in community:
+                attrs = self.graph.nodes[n]
+                node_type = str(attrs.get("entity_type") or attrs.get("type") or attrs.get("node_type") or "").lower()
+                if node_type == "account" or str(n).startswith("ACC_"):
+                    accounts.append(n)
+                elif node_type in ("device", "ip") or str(n).startswith(("DEV_", "IP_")):
+                    shared_infra.append(n)
 
             if len(accounts) >= 2 and len(shared_infra) >= 1:
                 suspicious_clusters.append({
