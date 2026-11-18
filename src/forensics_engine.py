@@ -175,3 +175,32 @@ class FinancialForensicsEngine:
                 "connected_relationships": len(subgraph.edges),
             },
         }
+    def detect_mule_communities(self, min_size: int = 3) -> list[dict]:
+        """Detect tightly clustered mule rings and shared-infrastructure communities using Louvain."""
+        undirected = self.graph.to_undirected()
+        communities = nx.algorithms.community.louvain_communities(undirected, seed=42)
+
+        suspicious_clusters = []
+        for idx, community in enumerate(communities, start=1):
+            if len(community) < min_size:
+                continue
+
+            accounts = [
+                n for n in community
+                if self.graph.nodes[n].get("entity_type") == "Account"
+            ]
+            shared_infra = [
+                n for n in community
+                if self.graph.nodes[n].get("entity_type") in ("Device", "IP")
+            ]
+
+            if len(accounts) >= 2 and len(shared_infra) >= 1:
+                suspicious_clusters.append({
+                    "community_id": f"COMM_{idx:02d}",
+                    "total_nodes": len(community),
+                    "linked_accounts": sorted(accounts),
+                    "shared_infrastructure": sorted(shared_infra),
+                    "typology": "MULE_RING_COMMUNITY",
+                })
+
+        return suspicious_clusters
