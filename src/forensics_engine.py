@@ -36,11 +36,16 @@ class FinancialForensicsEngine:
             if not (min_hops <= hop_count <= max_hops):
                 continue
 
-            hop_amounts = []
+           hop_amounts = []
             for i in range(hop_count):
                 u = cycle[i]
                 v = cycle[(i + 1) % hop_count]
                 hop_amounts.append(tx_graph[u][v]["amount"])
+
+            # Find the largest transfer (the true starting point of the laundering ring)
+            max_idx = hop_amounts.index(max(hop_amounts))
+            cycle = cycle[max_idx:] + cycle[:max_idx]
+            hop_amounts = hop_amounts[max_idx:] + hop_amounts[:max_idx]
 
             initial_amount = hop_amounts[0]
             final_amount = hop_amounts[-1]
