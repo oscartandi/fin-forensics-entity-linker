@@ -9,7 +9,7 @@ def test_visualize_entity_success():
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "ACC_301" in response.text
-    assert "vis.Network" in response.text
+    assert "graphCanvas" in response.text
 
 
 def test_visualize_entity_not_found():
