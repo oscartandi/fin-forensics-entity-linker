@@ -35,9 +35,9 @@ class FinancialForensicsEngine:
             hop_count = len(cycle)
             if not (min_hops <= hop_count <= max_hops):
                 continue
-
-           hop_amounts = []
-            for i in range(hop_count):
+            
+            hop_amounts = []
+             for i in range(hop_count):
                 u = cycle[i]
                 v = cycle[(i + 1) % hop_count]
                 hop_amounts.append(tx_graph[u][v]["amount"])
